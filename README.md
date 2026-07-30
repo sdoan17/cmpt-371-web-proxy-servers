@@ -17,7 +17,16 @@ This repository contains the Option 1 mini project for CMPT 371. The project use
 3. Specify, build, and test the minimal proxy server.
 4. Add multithreaded request handling and document the parallel-request result.
 5. Add frame-based response handling to mitigate HOL blocking and document the result.
-6. Assemble the required Python files, modified HTML files if any, evidence, and PDF report for submission.
+6. Write the PDF report with the required specifications, test procedures, request messages, results, and screenshots or captured output.
+7. Assemble the required submission files into a ZIP archive.
+
+## Required Submission Contents
+
+The final ZIP archive must include:
+
+- Python source files (`.py`).
+- Modified HTML test files, if any, and capture or analysis files such as figures.
+- A PDF report that documents the status-code generation logic, proxy requirements, test procedures and request messages for every step, and evidence showing the results.
 
 The detailed implementation-ready plan will be stored in `docs/plans/`.
 
@@ -30,4 +39,3 @@ tests/          Automated or manual test helpers and fixtures
 docs/evidence/  Saved request/response output and screenshots for the report
 docs/plans/     Project planning documents
 ```
-
