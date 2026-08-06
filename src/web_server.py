@@ -2,6 +2,7 @@ import socket
 from datetime import datetime, timezone
 from email.utils import formatdate, parsedate_to_datetime
 from pathlib import Path
+import threading
 
 HOST = "127.0.0.1"
 PORT = 8080
@@ -87,39 +88,45 @@ def build_505_response():
         ["Content-Type: text/html"],
     )
 
+def handle_client(connection_socket, client_address):
+    with connection_socket:
+        request = connection_socket.recv(4096).decode("iso-8859-1")
+
+        print(f"\nRequest from {client_address}: {request}")
+
+        method, path, version, headers = parse_request(request)
+
+        if version != "HTTP/1.1":
+            response = build_505_response()
+        else:
+            file_path = resolve_public_path(path)
+
+            if file_path is None:
+                response = build_403_response()
+            elif not file_path.is_file():
+                response = build_404_response()
+            elif is_not_modified(file_path, headers.get("if-modified-since")):
+                response = build_304_response()
+            else: 
+                response = build_200_response(file_path)
+        
+        connection_socket.sendall(response)
+
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as server_socket:
     server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     server_socket.bind((HOST, PORT))
     server_socket.listen()
 
-    print(f"Server running at http::??{HOST}:{PORT}/test.html")
+    print(f"Server running at http://{HOST}:{PORT}/test.html")
 
     while True:
         connection_socket, client_address = server_socket.accept()
 
-        with connection_socket:
-            request = connection_socket.recv(4096).decode("iso-8859-1")
-            print(f"\nRequest from {client_address}:")
-            print(request)
-
-            method, path, version, headers = parse_request(request)
-
-            if version != "HTTP/1.1":
-                response = build_505_response()
-            else:
-                file_path = resolve_public_path(path)
-
-                if file_path is None:
-                    response = build_403_response()
-                elif not file_path.is_file():
-                    response = build_404_response()
-                elif is_not_modified(file_path, headers.get("if-modified-since")):
-                    response = build_304_response()
-                else:
-                    response = build_200_response(file_path)
-            
-            connection_socket.sendall(response)
-
+        thread = threading.Thread(
+            target=handle_client,
+            args=(connection_socket, client_address),
+        )
+        thread.start()
 
         
 
