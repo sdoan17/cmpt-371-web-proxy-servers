@@ -2,9 +2,6 @@ __pycache__/
 *.py[cod]
 .DS_Store
 .venv/
-
-# Locally generated report artifacts and report-generation helpers.
 output/
-tmp/
-tools/build_report.py
-docs/
+
+
