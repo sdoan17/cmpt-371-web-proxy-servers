@@ -11,13 +11,22 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as client_socket:
     #Request one large and three small objs
     requests = (
         "GET /largeOTest.html HTTP/1.1\r\n"
+        "Host: 127.0.0.1:9090\r\n"
+        "\r\n"
         "GET /smallO1Test.html HTTP/1.1\r\n"
+        "Host: 127.0.0.1:9090\r\n"
+        "\r\n"
         "GET /smallO2Test.html HTTP/1.1\r\n"
+        "Host: 127.0.0.1:9090\r\n"
+        "\r\n"
         "GET /smallO3Test.html HTTP/1.1\r\n"
+        "Host: 127.0.0.1:9090\r\n"
         "\r\n"
     )
 
     client_socket.sendall(requests.encode())
+    client_socket.shutdown(socket.SHUT_WR)
+    
     socket_file = client_socket.makefile("rb")
 
     responses = {1: b"", 2: b"", 3: b"", 4: b"",}

@@ -6,7 +6,7 @@ import threading
 
 HOST = "127.0.0.1"
 PORT = 9090
-PUBLIC_DIR = Path(__file__).resolve().parent.parent
+PUBLIC_DIR = Path(__file__).resolve().parent.parent / "public"
 
 def build_response(status, body = b"", headers=None):
     response_headers = [
@@ -136,16 +136,19 @@ def build_505_response():
 
 def handle_client(connection_socket, client_address):
     with connection_socket:
-        request_data = connection_socket.recv(4096).decode("iso-8859-1")
+        request_data = read_request_batch(connection_socket)
+        requests = [
+            request
+            for request in request_data.split("\r\n\r\n")
+            if request.strip()
+        ]
 
         print(f"\nRequest from {client_address}: {request_data}")
-
-        request_lines = request_data.split("\r\n")
 
         objects = []
         objId = 1
 
-        for request in request_lines:
+        for request in requests:
             if request == "" or request == " ":
                 continue
 
@@ -180,6 +183,19 @@ def handle_client(connection_socket, client_address):
 
         #connection_socket.sendall(response)
         sendInFrames(connection_socket, objects)
+
+def read_request_batch(connection_socket):
+    chunks = []
+
+    while True:
+        chunk = connection_socket.recv(4096)
+
+        if not chunk:
+            break
+
+        chunks.append(chunk)
+    
+    return b"".join(chunks).decode("iso-8859-1")
 
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as server_socket:
     server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
