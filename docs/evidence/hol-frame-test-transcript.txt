@@ -1,0 +1,36 @@
+CMPT 371 Mini Project - Step Five frame test transcript
+
+Server command:
+python3 src/framedServer.py
+
+Client command:
+python3 tests/framedClient.py
+
+Requested objects:
+1. /largeOTest.html (38,363-byte file)
+2. /smallO1Test.html (49-byte file)
+3. /smallO2Test.html (950-byte file)
+4. /smallO3Test.html (49-byte file)
+
+Selected client output:
+Received frame from Object 1, frame is final flag = 0
+Received frame from Object 2, frame is final flag = 1
+Object 2 finished
+
+Received frame from Object 3, frame is final flag = 0
+Received frame from Object 4, frame is final flag = 1
+Object 4 finished
+
+Received frame from Object 1, frame is final flag = 0
+Received frame from Object 3, frame is final flag = 1
+Object 3 finished
+
+... additional frames from Object 1 ...
+Received frame from Object 1, frame is final flag = 1
+Object 1 finished
+
+All objects were officially received
+Object 1: HTTP/1.1 200 OK, 38,495 bytes
+Object 2: HTTP/1.1 200 OK, 178 bytes
+Object 3: HTTP/1.1 200 OK, 1,080 bytes
+Object 4: HTTP/1.1 200 OK, 178 bytes
