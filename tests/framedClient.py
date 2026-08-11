@@ -1,9 +1,7 @@
 import socket
 
-
 HOST = "127.0.0.1"
 PORT = 9090
-
 
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as client_socket:
     client_socket.connect((HOST, PORT))
@@ -34,28 +32,27 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as client_socket:
     finished = set()
 
     while len(finished) < 4:
-        frame_head = socket_file.readline().decode().strip()
-
-        parts = frame_head.split()
+        frameHead = socket_file.readline().decode().strip()
+        parts = frameHead.split()
 
         objId = int(parts[1])
         final = int(parts[2])
-        data_length = int(parts[3])
+        dataLen = int(parts[3])
 
-        frame_data = socket_file.read(data_length)
-        responses[objId] += frame_data
+        frameD = socket_file.read(dataLen)
+        responses[objId] += frameD
         print(f"Received frame from Object {objId}, "f"frame is final flag = {final}")
 
         if final == 1:
             finished.add(objId)
-            print(f"Object {objId} finished\n")
+            print(f"Object {objId} is finished\n")
 
 
 print("All objects were officially received")
 
-for object_id in responses:
-    response = responses[object_id]
+for objectId in responses:
+    response = responses[objectId]
 
-    first_line = response.split(b"\r\n")[0].decode()
+    firstL = response.split(b"\r\n")[0].decode()
 
-    print(f"Object {object_id}: "f"{first_line}, "f"{len(response)} bytes")
+    print(f"Object {objectId}: "f"{firstL}, "f"{len(response)} bytes")
